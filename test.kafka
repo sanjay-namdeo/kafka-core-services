@@ -5,7 +5,8 @@ topic: demo_java
 }
 
 ###
-CONSUMER java-demo
-topic:demo_java
-from: 0
-partitions: 0
+CONSUMER wikimedia.group
+topic:wikimedia.recent.change
+from: latest
+key-format: string
+value-format: string
