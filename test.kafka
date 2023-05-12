@@ -1,0 +1,11 @@
+PRODUCER keyed-message
+topic: demo_java
+{
+    "type": "b"
+}
+
+###
+CONSUMER java-demo
+topic:demo_java
+from: 0
+partitions: 0
