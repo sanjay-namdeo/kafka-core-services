@@ -1,3 +1,4 @@
 rootProject.name = 'kafka-core-services'
 include 'basics'
+include 'wikimedia-producer'
 
