@@ -7,10 +7,11 @@ import org.slf4j.LoggerFactory;
 
 public class ProducerDemo {
     private static final Logger log = LoggerFactory.getLogger(ProducerDemo.class);
+
     public static void main(String[] args) {
         log.info("Producer Demo Started");
         // Create a producer
-        KafkaProducer<String, String> producer = new KafkaProducer<>(ProducerProperties.properties);
+        KafkaProducer<String, String> producer = new KafkaProducer<>(ProducerProperties.PROPERTIES);
 
         // Send a producer record
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>("demo_java", "Hello, world!");

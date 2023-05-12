@@ -11,7 +11,7 @@ public class ProducerDemoWithCallback {
     public static void main(String[] args) throws InterruptedException {
         log.info("Producer Demo With Callback Started");
         // Create a producer
-        KafkaProducer<String, String> producer = new KafkaProducer<>(ProducerProperties.properties);
+        KafkaProducer<String, String> producer = new KafkaProducer<>(ProducerProperties.PROPERTIES);
 
         for (int i = 0; i < 10; i++) {
             // Send a producer record

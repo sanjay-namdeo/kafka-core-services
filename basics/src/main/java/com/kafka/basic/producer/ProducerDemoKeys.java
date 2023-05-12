@@ -11,7 +11,7 @@ public class ProducerDemoKeys {
     public static void main(String[] args) throws InterruptedException {
         log.info("Producer Demo With Callback Started");
         // Create a producer
-        KafkaProducer<String, String> producer = new KafkaProducer<>(ProducerProperties.properties);
+        KafkaProducer<String, String> producer = new KafkaProducer<>(ProducerProperties.PROPERTIES);
 
         for (int i = 0; i < 10; i++) {
             String key = "id" + i;
@@ -21,7 +21,8 @@ public class ProducerDemoKeys {
             // Send data - asynchronous operation
             producer.send(producerRecord, (metadata, exception) -> {
                 if (exception == null) {
-                    log.info("Received new metadata: \nTopic - {} \nKey - {}\nPartition - {} \nOffset - {}, \nTimestamp - {}, ",
+                    log.info(
+                            "Received new metadata: \nTopic - {} \nKey - {}\nPartition - {} \nOffset - {}, \nTimestamp - {}, ",
                             metadata.topic(),
                             producerRecord.key(),
                             metadata.partition(),
