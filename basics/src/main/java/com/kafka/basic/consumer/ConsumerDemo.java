@@ -1,22 +1,37 @@
 package com.kafka.basic.consumer;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Properties;
 
 public class ConsumerDemo {
     private static final Logger log = LoggerFactory.getLogger(ConsumerDemo.class);
+    public static final Properties PROPERTIES = new Properties();
+    public static final String TOPIC = "demo_java";
+    public static final String CONSUMER_GROUP_ID = "java-demo";
+
+    static {
+        // Create consumer properties
+        PROPERTIES.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        PROPERTIES.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        PROPERTIES.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        PROPERTIES.setProperty(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+        PROPERTIES.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    }
 
     public static void main(String[] args) {
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(ConsumerProperties.PROPERTIES);
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(PROPERTIES);
 
-        consumer.subscribe(Collections.singletonList(ConsumerProperties.TOPIC));
+        consumer.subscribe(Collections.singletonList(TOPIC));
 
         final Thread mainThread = Thread.currentThread();
 
