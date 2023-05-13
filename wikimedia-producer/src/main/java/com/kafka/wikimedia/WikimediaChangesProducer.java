@@ -37,6 +37,7 @@ public class WikimediaChangesProducer {
                 URI.create("https://stream.wikimedia.org/v2/stream/recentchange")).build();
 
         // Start event source in another thread.
+        log.info("Started event source");
         eventSource.start();
 
         TimeUnit.MINUTES.sleep(10);
