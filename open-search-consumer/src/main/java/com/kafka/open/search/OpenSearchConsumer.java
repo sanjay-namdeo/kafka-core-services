@@ -23,6 +23,8 @@ import org.opensearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParser;
+
 public class OpenSearchConsumer {
     private static Logger log = LoggerFactory.getLogger(OpenSearchConsumer.class.getSimpleName());
     private static final String INDEX_NAME = "wikimedia";
@@ -75,7 +77,7 @@ public class OpenSearchConsumer {
     public static void main(String[] args) throws IOException {
         // Create open search client
         final RestHighLevelClient openSearchClient = createOpenSearchClient();
-        
+
         // Create open search index
         createIndex(openSearchClient);
 
@@ -85,14 +87,28 @@ public class OpenSearchConsumer {
 
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(3000));
+
             int recordCount = records.count();
             log.info("Record {} records.", recordCount);
 
             for (ConsumerRecord<String, String> record : records) {
-                IndexRequest indexRequest = new IndexRequest(INDEX_NAME).source(record.value(), XContentType.JSON);
-                IndexResponse indexResponse = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
-                log.info("IndexResponse - {}", indexResponse.getId());
+                try {
+                    // Pass a unique id to make records idempotent in open search => One record gets processed only once
+                    IndexRequest indexRequest = new IndexRequest(INDEX_NAME)
+                            .source(record.value(), XContentType.JSON)
+                            .id(extractId(record.value()));
+
+                    IndexResponse indexResponse = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
+
+                    log.info("IndexResponse - {}", indexResponse.getId());
+                } catch (Exception e) {
+                    log.error("IndexResponse Exception - {}", e.getMessage());
+                }
             }
         }
+    }
+
+    private static String extractId(String json) {
+        return JsonParser.parseString(json).getAsJsonObject().get("meta").getAsJsonObject().get("id").getAsString();
     }
 }
