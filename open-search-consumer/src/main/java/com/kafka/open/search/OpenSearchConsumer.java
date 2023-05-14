@@ -70,6 +70,7 @@ public class OpenSearchConsumer {
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
         return new KafkaConsumer<>(properties);
     }
@@ -93,7 +94,8 @@ public class OpenSearchConsumer {
 
             for (ConsumerRecord<String, String> record : records) {
                 try {
-                    // Pass a unique id to make records idempotent in open search => One record gets processed only once
+                    // Pass a unique id to make records idempotent in open search => One record gets
+                    // processed only once
                     IndexRequest indexRequest = new IndexRequest(INDEX_NAME)
                             .source(record.value(), XContentType.JSON)
                             .id(extractId(record.value()));
@@ -105,6 +107,10 @@ public class OpenSearchConsumer {
                     log.error("IndexResponse Exception - {}", e.getMessage());
                 }
             }
+
+            // Commit offset after batch is completed.
+            consumer.commitAsync();
+            log.info("Offset commited");
         }
     }
 
